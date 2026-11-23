@@ -1,6 +1,6 @@
 [package]
 name = "djie-core"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2024"
 description = "Djie Shell shared core: vault, models, SSH, sync"
 license = "MIT"

@@ -7,13 +7,16 @@
   const acEl = document.getElementById('ac');
 
   const term = new Terminal({
-    fontFamily: '"Cascadia Mono", "Cascadia Code", Consolas, monospace',
+    // Ikon prompt (Oh My Posh, Starship, …) diambil dari Symbols Nerd Font bawaan app
+    fontFamily: '"Cascadia Mono", "Cascadia Code", Consolas, "Symbols Nerd Font Mono", monospace',
     fontSize: 13.5, lineHeight: 1.12, cursorBlink: true, scrollback: 10000,
     allowProposedApi: true, macOptionIsMeta: false, rightClickSelectsWord: false,
   });
   const fit = new FitAddon.FitAddon();
   term.loadAddon(fit);
   term.open(el);
+  // Font ikon dimuat async: gambar ulang setelah siap agar ikon di layar pertama tidak tetap kotak
+  document.fonts.load('13.5px "Symbols Nerd Font Mono"', '\ue5ff').then(() => term.refresh(0, term.rows - 1)).catch(() => {});
 
   let lastSize = '';
   const refit = () => {

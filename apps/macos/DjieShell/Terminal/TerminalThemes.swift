@@ -54,12 +54,23 @@ enum TerminalThemes {
         v.nativeBackgroundColor = bg
         v.caretColor = NSColor(Color(hex: d.accent))
         v.selectedTextBackgroundColor = NSColor(Color(hex: d.accent)).withAlphaComponent(0.35)
-        v.font = NSFont(name: "JetBrains Mono", size: 13) ?? .monospacedSystemFont(ofSize: 13, weight: .regular)
+        v.font = terminalFont
         // SwiftTerm hanya mengisi warna layer saat dibuat; perbarui manual supaya tema langsung terlihat.
         v.wantsLayer = true
         v.layer?.backgroundColor = bg.cgColor
         v.needsDisplay = true
     }
+
+    /// JetBrains Mono + cadangan ikon Symbols Nerd Font (bawaan app) untuk prompt Oh My Posh / Starship.
+    static let terminalFont: NSFont = {
+        if let url = Bundle.main.url(forResource: "SymbolsNerdFontMono-Regular", withExtension: "ttf") {
+            CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+        }
+        // Font sistem (SF Mono) mengabaikan font cadangan saat menggambar, jadi cadangannya Menlo.
+        let base = NSFont(name: "JetBrains Mono", size: 13) ?? NSFont(name: "Menlo", size: 13) ?? .monospacedSystemFont(ofSize: 13, weight: .regular)
+        let icons = NSFontDescriptor(fontAttributes: [.name: "SymbolsNFM"])
+        return NSFont(descriptor: base.fontDescriptor.addingAttributes([.cascadeList: [icons]]), size: 13) ?? base
+    }()
 
     private static func termColor(_ hex: String) -> SwiftTerm.Color {
         let ns = NSColor(Color(hex: hex)).usingColorSpace(.deviceRGB) ?? .white

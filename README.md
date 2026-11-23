@@ -228,7 +228,8 @@ Menyusul: SFTP, Database, Docker, Dashboard, Tim, dan sync Google Drive.
 
 | Versi | Tanggal | Sorotan |
 |---|---|---|
-| [**0.5.0**](CHANGELOG.md#050--2026-11-21) | 21 Nov 2026 | Dashboard & notifikasi, jalankan perintah di banyak server, Kelola Server, backup database, Docker, split & broadcast, Linux (beta) |
+| [**0.5.1**](CHANGELOG.md#051--2026-11-23) | 23 Nov 2026 | Ikon prompt Oh My Posh / Starship tampil di terminal, admin Tim tidak lagi turun jadi anggota, perbaikan broadcast |
+| [0.5.0](CHANGELOG.md#050--2026-11-21) | 21 Nov 2026 | Dashboard & notifikasi, jalankan perintah di banyak server, Kelola Server, backup database, Docker, split & broadcast, Linux (beta) |
 | [0.4.0](CHANGELOG.md#040--2026-11-20) | 20 Nov 2026 | Server Lokal (Apache/Nginx + PHP, MySQL, PostgreSQL, MongoDB), Tim, edit file SFTP & buka dengan app lain |
 | [0.3.0](CHANGELOG.md#030--2026-11-20) | 20 Nov 2026 | Info server dengan grafik live CPU, RAM, jaringan, storage |
 | [0.2.0](CHANGELOG.md#020--2026-11-20) | 20 Nov 2026 | Versi Windows, proxy SOCKS5/HTTP, database ala phpMyAdmin, terminal lokal |
@@ -337,7 +338,7 @@ cd core && DJIE_STACK_ROOT=/tmp/djie-stack cargo test --test stack_live -- --ign
 Naikkan versi (`core/Cargo.toml`, `apps/macos/project.yml`, `DjieShell.csproj`, `DjieShell.iss`), tambahkan catatan di `CHANGELOG.md`, lalu push tag — GitHub Actions membuat draft release berisi DMG macOS dan `Setup.exe` Windows.
 
 ```bash
-git tag v0.5.0 && git push origin v0.5.0
+git tag v0.5.1 && git push origin v0.5.1
 ```
 
 </details>

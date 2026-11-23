@@ -8,7 +8,12 @@ Download versi terbaru: [Releases](https://github.com/masadjie/djie-shell/releas
 
 ## [Unreleased]
 
+## [0.5.1] — 2026-11-23
+
+Rilis perbaikan untuk v0.5.
+
 ### Diperbaiki
+- Terminal: ikon prompt Oh My Posh / Starship / Powerlevel (folder, OS, git, panah powerline) tidak lagi tampil sebagai kotak □. Djie Shell kini membawa font ikon [Symbols Nerd Font](https://www.nerdfonts.com/) sebagai cadangan, tanpa perlu instal font apa pun; huruf biasa tetap memakai font terminal (macOS & Windows)
 - Tim: admin tidak lagi berubah jadi anggota "menunggu admin" saat vault yang sama dipakai ganti akun Google lalu disinkron. Tim yang telanjur begitu dipulihkan saat sinkron jika kunci adminnya masih ada di vault; jika tidak, app menjelaskan masalahnya (core, tampilan macOS & Windows)
 - Tim (macOS): keterangan waktu sinkron ikut bahasa app
 - Broadcast terminal tidak lagi meneruskan balasan otomatis terminal (mis. laporan posisi kursor `ESC[10;10R`) ke panel lain — sebelumnya bisa muncul teks aneh seperti `;10R` di server lain (macOS & Windows)
@@ -128,7 +133,9 @@ Rilis pertama (macOS).
 - **Sync Google Drive** (folder tersembunyi `drive.appdata`), halaman Akun, mode gelap & terang
 - Website dengan kebijakan privasi & ketentuan
 
-[Unreleased]: https://github.com/masadjie/djie-shell/compare/v0.4.0...main
+[Unreleased]: https://github.com/masadjie/djie-shell/compare/v0.5.1...main
+[0.5.1]: https://github.com/masadjie/djie-shell/releases/tag/v0.5.1
+[0.5.0]: https://github.com/masadjie/djie-shell/releases/tag/v0.5.0
 [0.4.0]: https://github.com/masadjie/djie-shell/releases/tag/v0.4.0
 [0.3.0]: https://github.com/masadjie/djie-shell/releases/tag/v0.3.0
 [0.2.0]: https://github.com/masadjie/djie-shell/releases/tag/v0.2.0

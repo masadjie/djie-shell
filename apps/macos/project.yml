@@ -20,6 +20,9 @@ targets:
       # Kamus bahasa Inggris (dibagi dengan Windows & Linux)
       - path: ../../i18n/en.json
         buildPhase: resources
+      # Ikon Nerd Font untuk prompt Oh My Posh / Starship (dibagi dengan Windows)
+      - path: ../../fonts/SymbolsNerdFontMono-Regular.ttf
+        buildPhase: resources
     dependencies:
       - framework: Frameworks/DjieCoreFFI.xcframework
         embed: false
@@ -32,8 +35,8 @@ targets:
       base:
         PRODUCT_NAME: Djie Shell
         PRODUCT_BUNDLE_IDENTIFIER: com.djieshell.app
-        MARKETING_VERSION: 0.5.0
-        CURRENT_PROJECT_VERSION: 5
+        MARKETING_VERSION: 0.5.1
+        CURRENT_PROJECT_VERSION: 6
         SWIFT_VERSION: "5.0"
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Djie Shell

@@ -1,6 +1,6 @@
 [package]
 name = "djie-shell"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2024"
 description = "Djie Shell untuk Linux (GTK4 + libadwaita + VTE)"
 license = "MIT"

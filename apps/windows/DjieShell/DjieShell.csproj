@@ -19,7 +19,7 @@
     <LangVersion>latest</LangVersion>
     <ApplicationIcon>Assets\djie.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>0.5.0</Version>
+    <Version>0.5.1</Version>
     <Product>Djie Shell</Product>
     <Company>Adjie Kurniawan</Company>
     <!-- Kode binding hasil generate tidak perlu memicu warning -->
@@ -35,6 +35,8 @@
     <Content Include="Assets\**" CopyToOutputDirectory="PreserveNewest" />
     <!-- Kamus bahasa Inggris (dibagi dengan Mac & Linux) -->
     <EmbeddedResource Include="..\..\..\i18n\en.json" LogicalName="en.json" />
+    <!-- Ikon Nerd Font untuk prompt Oh My Posh / Starship (dibagi dengan Mac) -->
+    <Content Include="..\..\..\fonts\SymbolsNerdFontMono-Regular.ttf" Link="Assets\terminal\SymbolsNerdFontMono-Regular.ttf" CopyToOutputDirectory="PreserveNewest" />
     <!-- djie_core.dll sesuai arsitektur build -->
     <None Include="Native\arm64\djie_core.dll" Condition="'$(Platform)' == 'ARM64'" Link="djie_core.dll" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Native\x64\djie_core.dll" Condition="'$(Platform)' == 'x64'" Link="djie_core.dll" CopyToOutputDirectory="PreserveNewest" />
