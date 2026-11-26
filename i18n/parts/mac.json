@@ -922,5 +922,7 @@
  "✓ {} baris terpengaruh": "✓ {} rows affected",
  "✓ {} tersimpan ke server": "✓ {} saved to the server",
  "(dipotong)": "(truncated)",
- "disinkron {}": "synced {}"
+ "disinkron {}": "synced {}",
+ "Isi password tersimpan": "Fill saved password",
+ "isi password": "fill password"
 }

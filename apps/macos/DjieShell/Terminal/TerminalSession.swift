@@ -63,6 +63,12 @@ final class TerminalSession: Identifiable {
         v.processDelegate = d
         autocomplete.view = v
         autocomplete.snippets = { [weak model] in model?.snippets ?? [] }
+        // Password sudo = password login host yang tersimpan (bukan untuk terminal lokal)
+        autocomplete.secret = { [weak self] in
+            guard let self, !self.isLocal, let pw = self.host.password, !pw.isEmpty, !self.host.username.isEmpty else { return nil }
+            return (self.host.username, pw)
+        }
+        v.onOutput = { [weak ac = autocomplete] in ac?.outputArrived() }
         v.onInput = { [weak self, weak ac = autocomplete] data in
             ac?.consume(data)
             if let self { self.model?.broadcastInput(from: self, data: data) }
@@ -165,13 +171,23 @@ final class DjieTerminalView: LocalProcessTerminalView {
     var onFirstData: (() -> Void)?
     /// Semua input ke shell (ketikan, paste, snippet) — dipakai autocomplete.
     var onInput: ((ArraySlice<UInt8>) -> Void)?
+    /// Output baru dari shell (dipakai deteksi prompt password sudo).
+    var onOutput: (() -> Void)?
     private var gotData = false
+    private var sendingSecret = false
+
+    /// Kirim rahasia (password sudo) langsung ke shell: tidak lewat autocomplete, riwayat, atau broadcast.
+    func sendSecret(_ text: String) {
+        sendingSecret = true
+        defer { sendingSecret = false }
+        send(txt: text)
+    }
 
     func resetFirstData() { gotData = false }
 
     override func send(source: TerminalView, data: ArraySlice<UInt8>) {
         super.send(source: source, data: data)
-        onInput?(data)
+        if !sendingSecret { onInput?(data) }
     }
 
     /// Ukuran satu sel karakter (untuk menaruh popup di posisi kursor).
@@ -184,6 +200,7 @@ final class DjieTerminalView: LocalProcessTerminalView {
 
     override func dataReceived(slice: ArraySlice<UInt8>) {
         super.dataReceived(slice: slice)
+        if let onOutput { DispatchQueue.main.async(execute: onOutput) }
         if !gotData {
             gotData = true
             DispatchQueue.main.async { self.onFirstData?() }

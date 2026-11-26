@@ -8,6 +8,9 @@ Download versi terbaru: [Releases](https://github.com/masadjie/djie-shell/releas
 
 ## [Unreleased]
 
+### Baru
+- **🔑 Isi password sudo dari host tersimpan** — saat terminal SSH menampilkan prompt `[sudo] password for <user>:` (atau `Password:` setelah perintah `sudo`), muncul tawaran mengisi password tersimpan host itu: **Tab** atau klik untuk mengisi, **Esc** untuk menutup. Hanya muncul jika user di prompt sama dengan user host dan password-nya tersimpan; tidak pernah mengisi otomatis, tidak ikut broadcast atau riwayat, dan tidak ditawarkan untuk `su` (password root) maupun login SSH ke server lain (macOS & Windows)
+
 ## [0.5.1] — 2026-11-23
 
 Rilis perbaikan untuk v0.5.

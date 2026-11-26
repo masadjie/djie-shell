@@ -129,6 +129,11 @@ internal sealed class TerminalSession
             case "key":
                 _model.HandleTerminalShortcut(m.GetProperty("k").GetString() ?? "");
                 break;
+            case "sudoFill":
+                // Password tersimpan ditulis langsung ke shell sesi ini saja: tidak lewat halaman terminal, riwayat, atau broadcast
+                if (SudoUser is { } user && m.GetProperty("user").GetString() == user && _pty != null && _gotData)
+                    _pty.Write(Host.Password + "\r");
+                break;
         }
     }
 
@@ -149,8 +154,14 @@ internal sealed class TerminalSession
     {
         t = "cfg", enabled = Settings.Bool(Settings.Autocomplete, true), hostId = Host.Id,
         history = CommandHistory.Commands(Host.Id), common = CommonCommands,
-        snippets = _model.Snippets.Select(s => new { label = s.Label, command = s.Command }).ToArray()
+        snippets = _model.Snippets.Select(s => new { label = s.Label, command = s.Command }).ToArray(),
+        // Hanya nama user (bukan password) — halaman terminal memakainya untuk mengenali prompt sudo
+        sudoUser = SudoUser,
+        sudoLabels = new { fill = L.T("Isi password tersimpan"), accept = L.T("isi password"), close = L.T("tutup"), host = Host.Title() },
     });
+
+    /// <summary>User yang password sudo-nya tersimpan (= password login host), null untuk terminal lokal / tanpa password.</summary>
+    private string? SudoUser => !IsLocal && !string.IsNullOrEmpty(Host.Password) && !string.IsNullOrEmpty(Host.Username) ? Host.Username : null;
 
     private async Task PasteAsync()
     {

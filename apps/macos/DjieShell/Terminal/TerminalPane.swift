@@ -18,11 +18,13 @@ struct TerminalPane: View {
                 .blur(radius: session.status == .connecting && !session.isLocal ? 2 : 0)
 
             GeometryReader { geo in
-                if active && focused, session.autocomplete.visible {
+                if active && focused, session.autocomplete.sudo != nil {
+                    SudoPopup(ac: session.autocomplete, hostTitle: session.host.title, cell: session.view.cellSize, paneSize: geo.size, theme: theme)
+                } else if active && focused, session.autocomplete.visible {
                     AutocompletePopup(ac: session.autocomplete, cell: session.view.cellSize, paneSize: geo.size, theme: theme)
                 }
             }
-            .animation(.djieSnappy, value: session.autocomplete.visible)
+            .animation(.djieSnappy, value: session.autocomplete.active)
 
             if session.status == .connecting && !session.isLocal {
                 ConnectingOverlay(host: session.host)

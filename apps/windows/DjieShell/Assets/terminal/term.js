@@ -34,6 +34,46 @@
 
   const isAlt = () => term.buffer.active.type === 'alternate';
 
+  // ---- Password sudo: tawarkan password tersimpan host saat prompt sudo muncul ----
+  // Password tidak pernah masuk ke halaman ini: C# yang menulisnya langsung ke shell (tanpa broadcast).
+  const sudo = { user: null, labels: {}, offer: null, dismissed: false, lastCommand: '', timer: 0 };
+  const sudoNamed = /^\[sudo\] (?:password|kata sandi|sandi) (?:for|untuk) (\S+?)\s*:\s*$/i;
+  const sudoPlain = /^(?:\[sudo\] )?(?:password|kata sandi)\s*:\s*$/i;
+  const isReply = (t) => /^(\x1b\[\??[\d;]*[Rcn]|\x1b\[[IO]|\x1b\][^\x07]*\x07)+$/.test(t);
+
+  function promptUser(line) {
+    const text = line.trim();
+    const m = sudoNamed.exec(text);
+    if (m) return m[1];
+    const cmd = sudo.lastCommand.trim();
+    if (sudoPlain.test(text) && (cmd === 'sudo' || cmd.startsWith('sudo '))) return sudo.user;
+    return null;
+  }
+
+  function checkPrompt() {
+    const b = term.buffer.active;
+    const line = isAlt() ? null : b.getLine(b.baseY + b.cursorY);
+    const user = line ? promptUser(line.translateToString(false, 0, b.cursorX)) : null;
+    if (!user) { sudo.dismissed = false; setSudo(null); return; }
+    if (!ac.enabled || sudo.dismissed || !sudo.user || user !== sudo.user) { setSudo(null); return; }
+    ac.items = [];
+    setSudo(user);
+  }
+
+  function setSudo(user) {
+    if (sudo.offer === user) return;
+    sudo.offer = user;
+    render();
+  }
+
+  function fillSudo() {
+    if (!sudo.offer) return;
+    post({ t: 'sudoFill', user: sudo.offer });
+    sudo.dismissed = true;
+    setSudo(null);
+    term.focus();
+  }
+
   // Ketikan benar-benar tampil di layar? Prompt password tidak meng-echo → tidak ada saran & tidak disimpan.
   function isEchoed(typed) {
     if (!typed) return false;
@@ -48,7 +88,9 @@
   function consume(data) {
     let text = data;
     // Balasan otomatis terminal (laporan posisi kursor, atribut perangkat, fokus) bukan ketikan
-    if (/^(\x1b\[\??[\d;]*[Rcn]|\x1b\[[IO]|\x1b\][^\x07]*\x07)+$/.test(text)) return;
+    if (isReply(text)) return;
+    // Mengetik sendiri di prompt password → tawaran ditutup
+    if (sudo.offer) { sudo.dismissed = true; setSudo(null); }
     if (text.includes('\x1b[200~') || text.includes('\x1b[201~')) {
       text = text.replaceAll('\x1b[200~', '').replaceAll('\x1b[201~', '');
     } else if (text.startsWith('\x1b')) {
@@ -80,6 +122,8 @@
         post({ t: 'hist', cmd: ac.buffer });
       }
     }
+    sudo.lastCommand = ac.tracking ? ac.buffer : '';
+    sudo.dismissed = false;
     reset();
   }
 
@@ -119,6 +163,7 @@
   const kindColor = { history: '#5B9CF5', snippet: '#9D7CF2', command: '#3FD0B4' };
 
   function render() {
+    if (sudo.offer) { renderSudo(); place(); return; }
     if (!ac.items.length) { acEl.style.display = 'none'; return; }
     const typed = ac.buffer;
     acEl.innerHTML = ac.items.map((s, i) => {
@@ -129,6 +174,19 @@
         <span class="txt">${match}</span><span class="lbl">${esc(label)}</span></div>`;
     }).join('') + `<div class="foot"><span><kbd>Tab</kbd>terima</span><span><kbd>↑↓</kbd>pilih</span><span><kbd>Esc</kbd>tutup</span></div>`;
     acEl.style.display = 'block';
+    place();
+  }
+
+  function renderSudo() {
+    const l = sudo.labels;
+    acEl.innerHTML = `<div class="row sel sudo" data-sudo="1">
+        <span class="ico" style="color:#5B9CF5;background:#5B9CF526">\uE192</span>
+        <span class="txt"><b>${esc(l.fill || 'Isi password tersimpan')}</b><br><span class="lbl">${esc(sudo.offer + '@' + (l.host || ''))}</span></span></div>`
+      + `<div class="foot"><span><kbd>Tab</kbd>${esc(l.accept || 'isi password')}</span><span><kbd>Esc</kbd>${esc(l.close || 'tutup')}</span></div>`;
+    acEl.style.display = 'block';
+  }
+
+  function place() {
     // Posisi di bawah kursor; naik ke atas jika mepet bawah
     const screen = el.querySelector('.xterm-screen');
     const cw = screen.clientWidth / term.cols, ch = screen.clientHeight / term.rows;
@@ -143,10 +201,12 @@
   }
 
   acEl.addEventListener('mousedown', (e) => {
+    if (e.target.closest('[data-sudo]')) { e.preventDefault(); fillSudo(); return; }
     const row = e.target.closest('.row');
     if (row) { e.preventDefault(); accept(+row.dataset.i); }
   });
   acEl.addEventListener('mousemove', (e) => {
+    if (sudo.offer) return;
     const row = e.target.closest('.row');
     if (row && +row.dataset.i !== ac.index) { ac.index = +row.dataset.i; render(); }
   });
@@ -165,6 +225,10 @@
   term.attachCustomKeyEventHandler((e) => {
     if (e.type !== 'keydown') return true;
     const mod = e.ctrlKey || e.altKey || e.metaKey;
+    if (sudo.offer && !mod && !e.shiftKey) {
+      if (e.key === 'Tab') { e.preventDefault(); fillSudo(); return false; }
+      if (e.key === 'Escape') { e.preventDefault(); sudo.dismissed = true; setSudo(null); return false; }
+    }
     if (ac.items.length && !mod && !e.shiftKey) {
       if (e.key === 'Tab' || e.key === 'ArrowRight') { e.preventDefault(); accept(ac.index); return false; }
       if (e.key === 'ArrowDown') { e.preventDefault(); ac.index = (ac.index + 1) % ac.items.length; render(); return false; }
@@ -220,18 +284,25 @@
   host.addEventListener('message', (e) => {
     const m = e.data;
     switch (m.t) {
-      case 'out': term.write(m.d); if (ac.items.length) setTimeout(render, 0); break;
+      case 'out':
+        term.write(m.d);
+        if (ac.items.length) setTimeout(render, 0);
+        clearTimeout(sudo.timer);
+        sudo.timer = setTimeout(checkPrompt, 60);
+        break;
       case 'theme': applyTheme(m); break;
       case 'cfg':
         ac.enabled = m.enabled; ac.hostId = m.hostId; ac.history = m.history || []; ac.snippets = m.snippets || [];
         if (m.common) ac.common = m.common;
+        sudo.user = m.sudoUser || null;
+        sudo.labels = m.sudoLabels || {};
         if (!ac.enabled) hide();
         break;
       case 'input': term.input(m.d, true); break;
       case 'paste': if (m.d) term.paste(m.d); term.focus(); break;
       case 'selectAll': term.selectAll(); break;
       case 'copySel': if (term.hasSelection()) post({ t: 'copy', s: term.getSelection() }); break;
-      case 'reset': term.reset(); reset(); break;
+      case 'reset': term.reset(); reset(); sudo.lastCommand = ''; setSudo(null); break;
       case 'focus': term.focus(); refit(); break;
       case 'fit': refit(); break;
       case 'acceptAc': if (ac.items.length) accept(ac.index); break;

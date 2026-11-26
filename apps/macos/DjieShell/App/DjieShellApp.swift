@@ -78,7 +78,7 @@ enum KeyRouter {
         guard monitor == nil else { return }
         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             // Popup autocomplete terminal: Tab/→ terima, ↑↓ pilih, Esc tutup
-            if let s = model.activeSession, s.autocomplete.visible,
+            if let s = model.activeSession, s.autocomplete.active,
                NSApp.keyWindow?.firstResponder === s.view, s.autocomplete.handle(event) {
                 return nil
             }

@@ -820,5 +820,8 @@
  "… (output dipotong di 256 KB)": "… (output truncated at 256 KB)",
  "● Live · tiap 3 detik": "● Live · every 3 seconds",
  "✓ Tersimpan {}": "✓ Saved {}",
- "✓ {} tersimpan ke server": "✓ {} saved to server"
+ "✓ {} tersimpan ke server": "✓ {} saved to server",
+ "Isi password tersimpan": "Fill saved password",
+ "isi password": "fill password",
+ "tutup": "close"
 }
