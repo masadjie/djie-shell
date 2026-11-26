@@ -1126,7 +1126,7 @@ dependencies = [
 
 [[package]]
 name = "djie-core"
-version = "0.5.1"
+version = "0.5.2"
 dependencies = [
  "argon2",
  "base64 0.22.1",

@@ -8,6 +8,8 @@ Download versi terbaru: [Releases](https://github.com/masadjie/djie-shell/releas
 
 ## [Unreleased]
 
+## [0.5.2] — 2026-11-26
+
 ### Baru
 - **🔑 Isi password sudo dari host tersimpan** — saat terminal SSH menampilkan prompt `[sudo] password for <user>:` (atau `Password:` setelah perintah `sudo`), muncul tawaran mengisi password tersimpan host itu: **Tab** atau klik untuk mengisi, **Esc** untuk menutup. Hanya muncul jika user di prompt sama dengan user host dan password-nya tersimpan; tidak pernah mengisi otomatis, tidak ikut broadcast atau riwayat, dan tidak ditawarkan untuk `su` (password root) maupun login SSH ke server lain (macOS & Windows)
 
@@ -136,7 +138,8 @@ Rilis pertama (macOS).
 - **Sync Google Drive** (folder tersembunyi `drive.appdata`), halaman Akun, mode gelap & terang
 - Website dengan kebijakan privasi & ketentuan
 
-[Unreleased]: https://github.com/masadjie/djie-shell/compare/v0.5.1...main
+[Unreleased]: https://github.com/masadjie/djie-shell/compare/v0.5.2...main
+[0.5.2]: https://github.com/masadjie/djie-shell/releases/tag/v0.5.2
 [0.5.1]: https://github.com/masadjie/djie-shell/releases/tag/v0.5.1
 [0.5.0]: https://github.com/masadjie/djie-shell/releases/tag/v0.5.0
 [0.4.0]: https://github.com/masadjie/djie-shell/releases/tag/v0.4.0
